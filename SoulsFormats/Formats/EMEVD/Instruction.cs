@@ -320,10 +320,28 @@ namespace SoulsFormats
                                 throw new NotImplementedException($"Unimplemented argument type: {arg}");
                         }
                     }
+                    br.Pad(4);
+                    if (br.Position < ms.Length)
+                    {
+                        throw new ExcessDataException(br.Position, ms.Length);
+                    }
                 }
+
 
                 return result;
             }
+        }
+    }
+
+    public class ExcessDataException : Exception
+    {
+        public readonly long BytesRemaining;
+        public readonly long BytePosition;
+        public ExcessDataException(long position, long totalLength)
+            : base($"{totalLength - position} bytes of excess data data available at offset {position}")
+        {
+            BytesRemaining = totalLength - position;
+            BytePosition = position;
         }
     }
 }
